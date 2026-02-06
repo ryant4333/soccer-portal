@@ -44,3 +44,19 @@ def test_get_players_returns_created(client):
     names = [p["name"] for p in data]
     assert "Alice" in names
     assert "Bob" in names
+
+
+def test_update_player(client):
+    create_resp = client.post("/api/players", json={"name": "Old Name", "usual_number": "5"})
+    player_id = create_resp.json()["id"]
+
+    response = client.put(f"/api/players/{player_id}", json={"name": "New Name"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["name"] == "New Name"
+    assert data["usual_number"] == "5"  # unchanged field preserved
+
+
+def test_update_player_not_found(client):
+    response = client.put("/api/players/999", json={"name": "Ghost"})
+    assert response.status_code == 404
