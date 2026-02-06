@@ -60,3 +60,21 @@ def test_update_player(client):
 def test_update_player_not_found(client):
     response = client.put("/api/players/999", json={"name": "Ghost"})
     assert response.status_code == 404
+
+
+def test_delete_player(client):
+    create_resp = client.post("/api/players", json={"name": "To Delete"})
+    player_id = create_resp.json()["id"]
+
+    response = client.delete(f"/api/players/{player_id}")
+    assert response.status_code == 204
+
+    # Verify player is gone
+    get_resp = client.get("/api/players")
+    names = [p["name"] for p in get_resp.json()]
+    assert "To Delete" not in names
+
+
+def test_delete_player_not_found(client):
+    response = client.delete("/api/players/999")
+    assert response.status_code == 404

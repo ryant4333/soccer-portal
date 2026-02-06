@@ -40,3 +40,12 @@ def update_player(player_id: int, player: PlayerUpdate, db: Session = Depends(ge
     db.commit()
     db.refresh(db_player)
     return db_player
+
+
+@router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_player(player_id: int, db: Session = Depends(get_db)):
+    db_player = db.query(Player).filter(Player.id == player_id).first()
+    if not db_player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    db.delete(db_player)
+    db.commit()
