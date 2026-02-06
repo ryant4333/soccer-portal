@@ -31,3 +31,16 @@ def test_create_player_minimal(client):
 def test_create_player_missing_name(client):
     response = client.post("/api/players", json={"nickname": "Ghost"})
     assert response.status_code == 422
+
+
+def test_get_players_returns_created(client):
+    client.post("/api/players", json={"name": "Alice", "usual_number": "7"})
+    client.post("/api/players", json={"name": "Bob", "usual_number": "9"})
+
+    response = client.get("/api/players")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    names = [p["name"] for p in data]
+    assert "Alice" in names
+    assert "Bob" in names
