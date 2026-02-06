@@ -12,6 +12,11 @@ app.add_middleware(
 )
 
 
+from app.routers import players
+
+app.include_router(players.router)
+
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
